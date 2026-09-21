@@ -16,7 +16,8 @@ interface ToastContextValue {
 
 const ToastContext = createContext<ToastContextValue | undefined>(undefined);
 
-const AUTO_DISMISS_MS = 5000;
+const AUTO_DISMISS_MS = 4000;
+const MAX_VISIBLE_TOASTS = 2;
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -27,9 +28,21 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const showToast = useCallback(
     (message: string, type: ToastType = "error") => {
-      const id = Date.now() + Math.random();
-      setToasts((current) => [...current, { id, message, type }]);
-      setTimeout(() => dismissToast(id), AUTO_DISMISS_MS);
+      setToasts((current) => {
+        // Evita empilhar a mesma mensagem duas vezes seguidas (ex: efeito
+        // do StrictMode disparando o mesmo evento em desenvolvimento).
+        const lastToast = current[current.length - 1];
+        if (lastToast && lastToast.message === message && lastToast.type === type) {
+          return current;
+        }
+
+        const id = Date.now() + Math.random();
+        setTimeout(() => dismissToast(id), AUTO_DISMISS_MS);
+
+        const next = [...current, { id, message, type }];
+        // Mantém no máximo N toasts visíveis por vez, descartando os mais antigos.
+        return next.slice(-MAX_VISIBLE_TOASTS);
+      });
     },
     [dismissToast],
   );
