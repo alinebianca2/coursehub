@@ -1,0 +1,21 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// SQLite não possui suporte nativo a enums no Prisma; o campo `role`
+// é armazenado como String e restrito a "ADMIN" | "OPERATOR" | "CLIENT"
+// pela validação Zod na camada de aplicação (ver src/validators).
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("CLIENT")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
