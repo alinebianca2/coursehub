@@ -370,6 +370,14 @@ sem esse campo.
   Em produção, seria obrigatório usar HTTPS, porque sem ele qualquer dado
   trafegando entre frontend e backend (incluindo o JWT e a senha no
   login) pode ser interceptado na rede.
+- **Dependências do frontend**: o `npm audit` do frontend pode apontar
+  vulnerabilidades no `vite`/`esbuild` usados em desenvolvimento (ex:
+  `GHSA-67mh-4wv8-2f99`). Elas afetam só o **servidor de desenvolvimento**
+  (`npm run dev`) — um site malicioso, se aberto no navegador ao mesmo
+  tempo que o `vite dev` está rodando, poderia em tese ler respostas dele.
+  Não afeta o build de produção (`npm run build`) nem a API. Risco
+  aceito para um projeto acadêmico local; em produção o `vite dev` nunca
+  roda de qualquer forma.
 
 ## 15. Exemplos de requisições
 
