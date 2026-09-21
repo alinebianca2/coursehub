@@ -14,11 +14,15 @@ function getSecret(): string {
   return secret;
 }
 
+const ALGORITHM = "HS256";
+
 export function signToken(payload: JwtPayload): string {
   const expiresIn = (process.env.JWT_EXPIRES_IN ?? "1h") as SignOptions["expiresIn"];
-  return jwt.sign(payload, getSecret(), { expiresIn });
+  return jwt.sign(payload, getSecret(), { expiresIn, algorithm: ALGORITHM });
 }
 
 export function verifyToken(token: string): JwtPayload {
-  return jwt.verify(token, getSecret()) as unknown as JwtPayload;
+  // Restringe explicitamente o algoritmo aceito na verificação para
+  // evitar ataques de confusão de algoritmo (ex: token forjado com "alg: none").
+  return jwt.verify(token, getSecret(), { algorithms: [ALGORITHM] }) as unknown as JwtPayload;
 }
