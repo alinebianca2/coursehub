@@ -1,4 +1,5 @@
 import { FormEvent, useState } from "react";
+import { useToast } from "../context/ToastContext";
 import { ROLES, Role, User } from "../types/user";
 
 export interface UserFormValues {
@@ -20,19 +21,19 @@ export function UserForm({ initialUser, submitLabel, onSubmit, onCancel }: UserF
   const [email, setEmail] = useState(initialUser?.email ?? "");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<Role>(initialUser?.role ?? "CLIENT");
-  const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const { showToast } = useToast();
 
   const isEditing = Boolean(initialUser);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    setError(null);
     setSubmitting(true);
     try {
       await onSubmit({ name, email, password, role });
+      showToast(isEditing ? "Usuário atualizado com sucesso" : "Usuário criado com sucesso", "success");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao salvar usuário");
+      showToast(err instanceof Error ? err.message : "Erro ao salvar usuário");
     } finally {
       setSubmitting(false);
     }
@@ -72,8 +73,6 @@ export function UserForm({ initialUser, submitLabel, onSubmit, onCancel }: UserF
           ))}
         </select>
       </label>
-
-      {error && <p className="form-error">{error}</p>}
 
       <div className="form-actions">
         <button type="submit" className="btn btn-primary" disabled={submitting}>

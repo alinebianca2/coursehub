@@ -1,14 +1,15 @@
 import { FormEvent, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 
 export function LoginPage() {
   const { user, login } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   if (user) {
@@ -17,13 +18,12 @@ export function LoginPage() {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    setError(null);
     setSubmitting(true);
     try {
       await login(email, password);
       navigate("/", { replace: true });
     } catch {
-      setError("E-mail ou senha inválidos");
+      showToast("E-mail ou senha inválidos");
     } finally {
       setSubmitting(false);
     }
@@ -55,8 +55,6 @@ export function LoginPage() {
             required
           />
         </label>
-
-        {error && <p className="form-error">{error}</p>}
 
         <button type="submit" className="btn btn-primary" disabled={submitting}>
           {submitting ? "Entrando..." : "Entrar"}

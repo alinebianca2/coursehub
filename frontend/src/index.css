@@ -8,6 +8,7 @@
   --color-primary-hover: #2557c7;
   --color-danger: #d1242f;
   --color-danger-hover: #a5222b;
+  --color-success: #1a7f37;
   --radius: 8px;
 }
 
@@ -264,4 +265,57 @@ h2 {
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   font-size: 1rem;
+}
+
+.toast-container {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1000;
+  max-width: 320px;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  color: #fff;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: toast-in 0.2s ease-out;
+}
+
+.toast-error {
+  background: var(--color-danger);
+}
+
+.toast-success {
+  background: var(--color-success);
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

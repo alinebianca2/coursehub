@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { UserForm, UserFormValues } from "../components/UserForm";
 import { UserTable } from "../components/UserTable";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 import * as userService from "../services/userService";
 import { ApiError } from "../services/api";
 import { User } from "../types/user";
@@ -10,6 +11,7 @@ type FormMode = { type: "create" } | { type: "edit"; user: User } | null;
 
 export function UsersPage() {
   const { user, token } = useAuth();
+  const { showToast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -68,9 +70,10 @@ export function UsersPage() {
 
     try {
       await userService.deleteUser(targetUser.id, token);
+      showToast("Usuário excluído com sucesso", "success");
       await loadUsers();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Não foi possível excluir o usuário");
+      showToast(err instanceof ApiError ? err.message : "Não foi possível excluir o usuário");
     }
   };
 
